@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     
     //print to terminal
     for (const std::string& curr : states) {
-        std::cout << makePretty(curr, '1' , ' ') << std::endl;
+        std::cout << curr << std::endl;
     }
     
     return 0; 
@@ -64,14 +64,14 @@ std::string nextState(std::map<std::string, int> ruleset, std::string state){
     int len = state.size(); 
     
     // loop through the neighborhoods
-    for(int i = 0; i < 0; i++){
+    for(int i = 0; i < len; i++){
         char prev = state[(i - 1) % len]; 
         char curr = state[i]; 
         char next = state[(i + 1) % len]; 
-        std::string neighborhood, result; 
+        std::string neighborhood; 
         neighborhood += prev + curr + next;
-        result = ruleset[neighborhood]; 
-        newState += result;  
+        int result = ruleset[neighborhood]; 
+        newState += std::to_string(result);  
     }
 
     //return new state
@@ -82,7 +82,7 @@ std::string nextState(std::map<std::string, int> ruleset, std::string state){
 std::vector<std::string> generate(std::map<std::string, int> ruleset, std::string initialState, int steps){
     
     // temp variable of current state
-    std::string state;
+    std::string state = initialState; 
     
     // vector to add new state to
     std::vector<std::string> states; 
