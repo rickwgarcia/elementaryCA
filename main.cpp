@@ -4,10 +4,13 @@
 #include <map>
 #include <bitset>
 #include <cstdlib> 
-
+#include <vector>
 
 std::map<std::string, int> createRuleset(int rule); 
-
+std::string nextState(std::map<std::string, int> ruleset, std::string state); 
+std::vector<std::string> generate(std::map<std::string, int> ruleset, std::string initialState, int steps); 
+std::string makePretty(std::string state, char on, char off); 
+ 
 
 int main(int argc, char* argv[]) {
     
@@ -18,11 +21,19 @@ int main(int argc, char* argv[]) {
      
     // create ruleset
     std::map<std::string, int> ruleset = createRuleset(rule);  
-
+    
+    //run simulation
+    std::vector<std::string> states = generate(ruleset, initialState, steps); 
+    
+    //print to terminal
+    for (const std::string& curr : states) {
+        std::cout << makePretty(curr, '1' , ' ') << std::endl;
+    }
+    
     return 0; 
 }
 
-
+// returns a hasmap of the rules <neighborhood, resulting state>
 std::map<std::string, int> createRuleset(int rule) {
     
     // Converts an int to a binary string
@@ -43,5 +54,73 @@ std::map<std::string, int> createRuleset(int rule) {
     return ruleset;
 }
 
+//  returns the new state given a state and ruleset
+std::string nextState(std::map<std::string, int> ruleset, std::string state){
+    
+    // new state to be returns
+    std::string newState; 
 
+    //length of state for wrapping 
+    int len = state.size(); 
+    
+    // loop through the neighborhoods
+    for(int i = 0; i < 0; i++){
+        char prev = state[(i - 1) % len]; 
+        char curr = state[i]; 
+        char next = state[(i + 1) % len]; 
+        std::string neighborhood, result; 
+        neighborhood += prev + curr + next;
+        result = ruleset[neighborhood]; 
+        newState += result;  
+    }
+
+    //return new state
+    return newState; 
+}
+
+// returns an vector of the simulation for n steps
+std::vector<std::string> generate(std::map<std::string, int> ruleset, std::string initialState, int steps){
+    
+    // temp variable of current state
+    std::string state;
+    
+    // vector to add new state to
+    std::vector<std::string> states; 
+    states.push_back(state); 
+    
+    //run for n steps
+    for(int i = 0; i < steps; i++){
+        state = nextState(ruleset, state); 
+        states.push_back(state); 
+    }
+    
+    // return vector of states
+    return states; 
+}
+
+// returns a state in a displayable format given on and off
+std::string makePretty(std::string state, char on, char off){
+    
+    // length of state
+    int len = state.size(); 
+    
+    // formatted string to be returned
+    std::string pretty; 
+    
+    //run through the state replacing 0 with off and 1 with on representation
+    for(int i = 0; i < len; i++){
+        
+        // current state at 
+        int curr = state[i] - '0';
+        if(curr == 0) {
+            pretty += off; 
+        }
+        else {
+            pretty += on; 
+        }
+    }
+    
+    // return newly formatted line
+    return pretty; 
+}
 
