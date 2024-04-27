@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     
     //print to terminal
     for (const std::string& curr : states) {
-        std::cout << curr << std::endl;
+        std::cout << makePretty(curr, '*', ' ') << std::endl;
     }
     
     return 0; 
@@ -68,12 +68,12 @@ std::string nextState(std::map<std::string, int> ruleset, std::string state){
         char prev = state[(i - 1) % len]; 
         char curr = state[i]; 
         char next = state[(i + 1) % len]; 
-        std::string neighborhood; 
-        neighborhood += prev + curr + next;
+        std::string neighborhood = "";  
+        neighborhood = neighborhood + prev + curr + next;
         int result = ruleset[neighborhood]; 
         newState += std::to_string(result);  
-    }
-
+    } 
+    
     //return new state
     return newState; 
 }
