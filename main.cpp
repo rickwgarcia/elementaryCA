@@ -65,7 +65,7 @@ std::string nextState(std::map<std::string, int> ruleset, std::string state){
     
     // loop through the neighborhoods
     for(int i = 0; i < len; i++){
-        char prev = state[(i - 1) % len]; 
+        char prev = state[(i - 1 + len) % len]; 
         char curr = state[i]; 
         char next = state[(i + 1) % len]; 
         std::string neighborhood = "";  
