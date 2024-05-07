@@ -6,113 +6,89 @@
 #include <cstdlib> 
 #include <vector>
 
-class ElemntaryCA {
-    private: 
-        std::map<std::string, int> ruleset;
-        std::vector<std::string> generation; 
+class ElementaryCA {
+private:
+ 
+    std::map<std::string, int> ruleset;
+    std::vector<std::string> generation; 
 
-    public: 
-        CellularAutomaton(int rule, std::string initialState) {
-            ruleset = createRuleset(rule);
-            states.push_back(initialState); 
-        }
-    
-    private:
+public:
+     
+    ElementaryCA(int rule, const std::string& initialState) {
+        ruleset = createRuleset(rule);
+        generation.push_back(initialState); 
+    }
+
+    void run(int steps) {
+        generation = generate(steps);
        
-        // returns a hasmap of the rules <neighborhood, resulting state>
-        static std::map<std::string, int> createRuleset(int rule) {
+    }
     
-            // Converts an int to a binary string
-            std::string binaryRuleset = std::bitset<8>(rule).to_string();
-
-            // Save in hashmap
-            std::map<std::string, int> ruleset;
-            ruleset["111"] = binaryRuleset.at(0) - '0';  
-            ruleset["110"] = binaryRuleset.at(1) - '0';  
-            ruleset["101"] = binaryRuleset.at(2) - '0';  
-            ruleset["100"] = binaryRuleset.at(3) - '0';  
-            ruleset["011"] = binaryRuleset.at(4) - '0';  
-            ruleset["010"] = binaryRuleset.at(5) - '0';  
-            ruleset["001"] = binaryRuleset.at(6) - '0';  
-            ruleset["000"] = binaryRuleset.at(7) - '0'; 
-
-            //return hashmap of ruleset
-            return ruleset;
-        }   
-
-        //returns the new state given a state and ruleset
-        std::string nextState(std::string state){
-    
-            // new state to be returns
-            std::string newState; 
-
-            //length of state for wrapping 
-            int len = state.size(); 
-    
-            // loop through the neighborhoods
-            for(int i = 0; i < len; i++){
-                char prev = state[(i - 1 + len) % len]; 
-                char curr = state[i]; 
-                char next = state[(i + 1) % len]; 
-                std::string neighborhood = "";  
-                neighborhood = neighborhood + prev + curr + next;
-                int result = ruleset[neighborhood]; 
-                newState += std::to_string(result);  
-            }    
-    
-            //return new state
-            return newState; 
+    void display(){
+        for (std::string state : generation) {
+            std::cout << makePretty(state, '*', ' ') << std::endl;
         }
+    }
 
-        // returns an vector of the simulation for n steps
-        std::vector<std::string> generate(int steps){
-    
-            // temp variable of current state
-            std::string state = generation[0]; 
-    
-            // vector to add new state to
-            std::vector<std::string> states; 
-            states.push_back(state); 
-    
-            //run for n steps
-            for(int i = 0; i < steps; i++){
-                state = nextState(ruleset, state); 
-                states.push_back(state); 
-            }
-    
-            // return vector of states
-            return states; 
-        }
+private:
+    static std::map<std::string, int> createRuleset(int rule) {
+        std::string binaryRuleset = std::bitset<8>(rule).to_string();
+        std::map<std::string, int> ruleset;
+        ruleset["111"] = binaryRuleset.at(0) - '0';  
+        ruleset["110"] = binaryRuleset.at(1) - '0';  
+        ruleset["101"] = binaryRuleset.at(2) - '0';  
+        ruleset["100"] = binaryRuleset.at(3) - '0';  
+        ruleset["011"] = binaryRuleset.at(4) - '0';  
+        ruleset["010"] = binaryRuleset.at(5) - '0';  
+        ruleset["001"] = binaryRuleset.at(6) - '0';  
+        ruleset["000"] = binaryRuleset.at(7) - '0'; 
+        return ruleset;
+    }
 
-        // returns a state in a displayable format given on and off
-        static std::string makePretty(std::string state, char on, char off){
-    
-            // length of state
-            int len = state.size(); 
-    
-            // formatted string to be returned
-            std::string pretty; 
-    
-            //run through the state replacing 0 with off and 1 with on representation
-            for(int i = 0; i < len; i++){
-        
-                // current state at 
-                int curr = state[i] - '0';
-                if(curr == 0) {
-                    pretty += off; 
-                }
-                else {
-                    pretty += on; 
-                }
-            }
-    
-            // return newly formatted line
-            return pretty; 
+    std::vector<std::string> generate(int steps) {
+        std::string state = generation[0]; 
+        std::vector<std::string> states;
+        states.push_back(state);
+        for(int i = 0; i < steps; i++) {
+            state = nextState(state);
+            states.push_back(state);
         }
-}
+        return states;
+    }
+
+    std::string nextState(const std::string& state) {
+        std::string newState;
+        int len = state.length();
+        for(int i = 0; i < len; i++) {
+            char prev = state[(i - 1 + len) % len];
+            char curr = state[i];
+            char next = state[(i + 1) % len];
+            std::string neighborhood = std::string() + prev + curr + next;
+            int result = ruleset[neighborhood];
+            newState += std::to_string(result);
+        }
+        return newState;
+    }
+
+    static std::string makePretty(const std::string& state, char on, char off) {
+        std::string pretty;
+        for (char c : state) {
+            pretty += (c == '0') ? off : on;
+        }
+        return pretty;
+    }
+};
 
 int main(int argc, char* argv[]) {
    
-    return 0; 
+    int rule = std::stoi(argv[1]);
+    std::string initialState = argv[2];
+    int steps = std::stoi(argv[3]);
+
+    ElementaryCA automaton(rule, initialState);
+    automaton.run(steps);
+    automaton.display(); 
+
+    return 0;
 }
 
